@@ -16,19 +16,25 @@ class Response {
     }
 
     // Fetch all responses for a specific question
-    public function getResponsesByQuestionId($question_id) {
-        $stmt = $this->conn->prepare("
-            SELECT r.id, r.content, r.created_at, u.username 
-            FROM responses r
-            JOIN users u ON r.user_id = u.id 
-            WHERE r.question_id = ?
-            ORDER BY r.created_at ASC
-        ");
-        $stmt->bind_param("i", $question_id);
+    public function getResponsesByQuestionId($questionId) {
+        $sql = "SELECT * FROM responses WHERE question_id = ? ORDER BY created_at ASC";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $questionId);
         $stmt->execute();
         $result = $stmt->get_result();
+        $responses = $result->fetch_all(MYSQLI_ASSOC);
     
-        return $result->fetch_all(MYSQLI_ASSOC);
+        $nestedResponses = [];
+        foreach ($responses as $response) {
+            if ($response['parent_response_id'] === null) {
+                $nestedResponses[$response['id']] = $response;
+                $nestedResponses[$response['id']]['children'] = [];
+            } else {
+                $nestedResponses[$response['parent_response_id']]['children'][] = $response;
+            }
+        }
+    
+        return $nestedResponses;
     }
 
     // Edit a response

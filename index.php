@@ -31,6 +31,8 @@ if ($selected_question_id) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Question and Answer</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
 
@@ -83,28 +85,81 @@ if ($selected_question_id) {
                 <p class="text-gray-700 mt-2"><?= htmlspecialchars($selected_question['details'] ?? 'No details provided.') ?></p>
 
                 <div id="response-section" class="mt-4">
-                    <h3 class="text-lg font-semibold">Responses</h3>
+                    <h3 class="text-lg font-semibold mb-4">Responses</h3>
                     <div id="response-list" class="mt-2 border-t pt-2 text-gray-700">
-                        <?php if (!empty($responses)): ?>
-                            <?php foreach ($responses as $response): ?>
-                                <?Php $username = $response['username'] ?? 'Anonymous'; ?>
-                                <p class="border-b py-2"><?= htmlspecialchars($response['content']) ?> - <span class="text-sm text-gray-500"><?= htmlspecialchars($response['username']) ?></span></p>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <p class="text-gray-500">No responses yet. Be the first to respond!</p>
-                        <?php endif; ?>
-                    </div>
+                        <?php
+                        // Recursive function to display responses
+                        function displayResponse($response, $level = 0) {
+                            $username = $response['username'] ?? 'Anonymous';
+                            $marginLeft = $level * 20; // Indent child responses
+                            ?>
+                            <div class="border-b py-4 flex justify-between items-center group response-item" data-id="<?= $response['id'] ?>" style="margin-left: <?= $marginLeft ?>px;">
+                                <div class="w-full">
+                                    <p class="cursor-pointer">
+                                        <span class="font-medium"><?= htmlspecialchars($username) ?>:</span>
+                                        <?= htmlspecialchars($response['content']) ?>
+                                    </p>
+                                    <p class="text-xs text-gray-400 mt-1">
+                                        <?= date('F j, Y, g:i a', strtotime($response['created_at'])) ?>
+                                    </p>
+                                </div>
+                                <div class="flex space-x-3 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <!-- Like/Unlike -->
+                                    <button class="like-btn hover:text-blue-500" data-id="<?= $response['id'] ?>">
+                                        <i data-lucide="heart"></i>
+                                    </button>
+                                    <!-- Edit -->
+                                    <button class="edit-btn hover:text-green-500" data-id="<?= $response['id'] ?>">
+                                        <i data-lucide="pencil"></i>
+                                    </button>
+                                    <!-- Delete -->
+                                    <button class="delete-btn hover:text-red-500" data-id="<?= $response['id'] ?>">
+                                        <i data-lucide="trash"></i>
+                                    </button>
+                                    <!-- Share -->
+                                    <button class="share-btn hover:text-blue-500" data-id="<?= $response['id'] ?>">
+                                        <i data-lucide="share"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Reply Form (Initially Hidden) -->
+                            <div class="hidden ml-6 mt-2 response-reply-form" data-id="<?= $response['id'] ?>">
+                                <input type="text" class="w-full border rounded p-2 text-sm" placeholder="Reply to this response..." />
+                                <button class="mt-1 px-4 py-1 bg-blue-500 text-white text-xs rounded send-reply-btn" data-id="<?= $response['id'] ?>">
+                                    Reply
+                                </button>
+                            </div>
+                            <?php
+                            // Recursively display child responses
+                            if (!empty($response['children'])) {
+                                foreach ($response['children'] as $child) {
+                                    displayResponse($child, $level + 1);
+                                }
+                            }
+                        }
 
-                    <?php if ($username): ?>
-                        <form action="processes/submit_response.php" method="POST" class="mt-4">
-                            <input type="hidden" name="question_id" value="<?= $selected_question_id ?>">
-                            <textarea name="content" placeholder="Post a response..." required class="w-full p-2 border rounded-md"></textarea>
-                            <button type="submit" class="mt-2 bg-blue-500 text-white py-2 px-4 rounded">Post Response</button>
-                        </form>
-                    <?php else: ?>
-                        <p class="text-gray-500 mt-4">Sign in to post responses.</p>
-                    <?php endif; ?>
+                        // Display all responses
+                        if (!empty($responses)) {
+                            foreach ($responses as $response) {
+                                displayResponse($response);
+                            }
+                        } else {
+                            echo '<p class="text-gray-500">No responses yet. Be the first to respond!</p>';
+                        }
+                        ?>
+                    </div>
                 </div>
+
+                <?php if ($username): ?>
+                    <form id="response-form" action="processes/submit_response.php" method="POST" class="mt-4">
+                        <input type="hidden" name="question_id" value="<?= $selected_question_id ?>">
+                        <input type="hidden" name="parent_response_id" id="parent_response_id" value="">
+                        <textarea name="content" placeholder="Post a response..." required class="w-full p-2 border rounded-md"></textarea>
+                        <button type="submit" class="mt-2 bg-blue-500 text-white py-2 px-4 rounded">Post Response</button>
+                    </form>
+                <?php else: ?>
+                    <p class="text-gray-500 mt-4">Sign in to post responses.</p>
+                <?php endif; ?>
             <?php else: ?>
                 <h2 class="text-xl font-semibold">Welcome to the Forum</h2>
                 <p class="text-gray-700 mt-2">Ask questions, get answers, and share knowledge!</p>
@@ -134,11 +189,6 @@ if ($selected_question_id) {
         &copy; 2025 Question and Answer Forum
     </footer>
 
-    <script>
-        function toggleDropdown() {
-            document.getElementById("dropdown").classList.toggle("hidden");
-        }
-    </script>
-
+    <script src="js/main.js" defer></script>
 </body>
 </html>
