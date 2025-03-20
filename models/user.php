@@ -19,28 +19,38 @@ class User {
 	}
 
 	// create user
-	public function register() {
-		$query = "INSERT INTO " . $this->table . " (firstname, lastname, password, email, username, created_at) VALUES (:firstname, :lastname, :password, :email, :username, :created_at) VALUES (?, ?, ?, ?, ?, ?)";
+	public function register($firstname, $lastname, $email, $username, $phone, $password) {
+		$query = "INSERT INTO " . $this->table . " (firstname, lastname, email, username, phone, password, created_at) 
+				  VALUES (?, ?, ?, ?, ?, ?, ?)";
+	
 		$stmt = $this->conn->prepare($query);
-
-		// hash the password
-		$this->hashed_password = password_hash($this->password, PASSWORD_DEFAULT);
-
-		// bind the parameters
-		$stmt->bind_param("ssssss", $this->firstname, $this->lastname, $this->hashed_password, $this->email, $this->username, $this->created_at);
-
-		return $stmt->execute();
+	
+		if (!$stmt) {
+			die("Prepare failed: " . $this->conn->error);
+		}
+	
+		// Hash the password
+		$hashed_password = password_hash($password, PASSWORD_DEFAULT);
+		$created_at = date("Y-m-d H:i:s");
+	
+		// ✅ Bind parameters correctly
+		$stmt->bind_param("sssssss", $firstname, $lastname, $email, $username, $phone, $hashed_password, $created_at);
+	
+		if (!$stmt->execute()) {
+			die("Execute failed: " . $stmt->error);
+		}
+	
+		return true;
 	}
-
-	// check if the email exists
-	public function emailExists() {
-		$query = "SELECT id FROM " . $this->table . " WHERE email = ? LIMIT 1";
+	
+	public function checkUserExists($email, $username) {
+		$query = "SELECT id FROM " . $this->table . " WHERE email = ? OR username = ? LIMIT 1";
 		$stmt = $this->conn->prepare($query);
-
-		$stmt->bind_param("s", $this->email);
+	
+		$stmt->bind_param("ss", $email, $username);
 		$stmt->execute();
 		$stmt->store_result();
-
+	
 		return $stmt->num_rows > 0;
 	}
 
