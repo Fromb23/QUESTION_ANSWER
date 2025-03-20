@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         session_regenerate_id(true);
 
         // Store user data in session
-        $_SESSION['useer_id'] = $loggedInUser['id'];
+        $_SESSION['user_id'] = $loggedInUser['id'];
         $_SESSION['email'] = $loggedInUser['email'];
         $_SESSION['firstname'] = $loggedInUser['firstname'];
         $_SESSION['lastname'] = $loggedInUser['lastname'];

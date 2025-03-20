@@ -1,5 +1,8 @@
 <?php
 session_start();
+$profile_image = $_SESSION['profile_image'] ?? null;
+$username = $_SESSION['username'] ?? null;
+$first_letter = $username ? strtoupper(substr($username, 0, 1)) : null;
 ?>
 
 <!DOCTYPE html>
@@ -13,30 +16,38 @@ session_start();
 <body class="bg-gray-100 min-h-screen flex flex-col">
 
     <!-- Header -->
-    <header class="bg-white shadow-md p-4 flex flex-col sm:flex-row justify-between items-center">
+    <header class="bg-white shadow-md p-4 flex justify-between items-center">
         <h1 class="text-xl font-bold">QUESTION AND ANSWER</h1>
-        
-        <?php if (isset($_SESSION['username'])): ?>
-            <div class="relative mt-2 sm:mt-0">
-                <button onclick="toggleDropdown()" class="bg-blue-500 text-white px-4 py-2 rounded">
-                    Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?> ▼
+
+        <?php if ($username): ?>
+            <div class="relative">
+                <button onclick="toggleDropdown()" class="flex items-center bg-blue-500 text-white px-4 py-2 rounded-full">
+                    <?php if ($profile_image): ?>
+                        <img src="<?php echo htmlspecialchars($profile_image); ?>" alt="Profile" class="w-8 h-8 rounded-full mr-2">
+                    <?php else: ?>
+                        <span class="w-8 h-8 flex items-center justify-center bg-gray-300 text-gray-700 font-bold rounded-full mr-2">
+                            <?php echo $first_letter; ?>
+                        </span>
+                    <?php endif; ?>
+                    <span class="hidden sm:inline">Welcome, <?php echo htmlspecialchars($username); ?> ▼</span>
                 </button>
-                <div id="dropdown" class="hidden absolute right-0 mt-2 w-40 bg-white shadow-md rounded">
-                    <a href="profile.php" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+
+                <!-- Dropdown -->
+                <div id="dropdown" class="hidden absolute right-0 mt-2 w-40 bg-white shadow-md rounded-lg">
                     <a href="settings.php" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</a>
-                    <a href="logout.php" class="block px-4 py-2 text-red-600 hover:bg-gray-100">Logout</a>
+                    <a href="public/logout.php" class="block px-4 py-2 text-red-600 hover:bg-gray-100">Logout</a>
                 </div>
             </div>
         <?php else: ?>
-            <div class="mt-2 sm:mt-0">
-                <a href="public/signup.php" class="bg-blue-500 text-white px-4 py-2 rounded block sm:inline">Sign Up</a>
-                <a href="public/signin.php" class="bg-gray-500 text-white px-4 py-2 rounded block sm:inline mt-2 sm:mt-0">Sign In</a>
+            <div class="flex gap-2">
+                <a href="public/signup.php" class="bg-blue-500 text-white px-4 py-2 rounded">Sign Up</a>
+                <a href="public/signin.php" class="bg-gray-500 text-white px-4 py-2 rounded">Sign In</a>
             </div>
         <?php endif; ?>
     </header>
 
     <!-- Main Content Wrapper -->
-    <div class="container mx-auto mt-4 flex flex-col sm:flex-row gap-4 flex-grow">
+    <div class="container mx-auto mt-4 flex flex-col sm:flex-row gap-4 flex-grow px-2">
 
         <!-- Left Section (Questions & Users) -->
         <aside class="w-full sm:w-1/4 bg-white p-4 rounded shadow">
@@ -56,10 +67,10 @@ session_start();
             <h2 class="text-xl font-semibold">Welcome to the Forum</h2>
             <p class="text-gray-700 mt-2">Ask questions, get answers, and share knowledge!</p>
 
-            <?php if (isset($_SESSION['username'])): ?>
+            <?php if ($username): ?>
                 <!-- Show question posting form for logged-in users -->
-                <form action="post_question.php" method="POST" class="mt-4">
-                    <textarea name="question" placeholder="Ask a question..." required class="w-full p-2 border rounded-md"></textarea>
+                <form action="processes/submit_question.php" method="POST" class="mt-4">
+                    <textarea name="description" placeholder="Ask a question..." required class="w-full p-2 border rounded-md"></textarea>
                     <button type="submit" class="mt-2 bg-blue-500 text-white py-2 px-4 rounded">Post Question</button>
                 </form>
             <?php else: ?>

@@ -8,10 +8,15 @@ class Question {
     }
 
     // Create a new question
-    public function createQuestion($user_id, $title, $description) {
-        $query = "INSERT INTO " . $this->table . " (user_id, title, description) VALUES (?, ?, ?)";
+    public function createQuestion($user_id, $description) {
+        $query = "INSERT INTO " . $this->table . " (user_id, description, created_at) VALUES (?, ?, NOW())";
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("iss", $user_id, $title, $description);
+
+        if (!$stmt) {
+            die("Prepare failed: " . $this->conn->error);
+        }
+
+        $stmt->bind_param("is", $user_id, $description);
         return $stmt->execute();
     }
 
