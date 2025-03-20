@@ -34,9 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		exit();
 	}
 
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-    if ($user->register($firstname, $lastname, $email, $username, $phone, $hashed_password)) {
+    if ($user->register($firstname, $lastname, $email, $username, $phone, $password)) {
         header("Location: ../public/signin.php?success=Account created successfully! Please sign in.");
 		var_dump($_POST);
         exit();

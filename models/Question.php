@@ -7,7 +7,7 @@ class Question {
         $this->conn = $db;
     }
 
-    // ✅ Create a new question
+    // Create a new question
     public function createQuestion($user_id, $title, $description) {
         $query = "INSERT INTO " . $this->table . " (user_id, title, description) VALUES (?, ?, ?)";
         $stmt = $this->conn->prepare($query);
@@ -15,7 +15,7 @@ class Question {
         return $stmt->execute();
     }
 
-    // ✅ Fetch all questions
+    // Fetch all questions
     public function getAllQuestions() {
         $query = "SELECT * FROM " . $this->table . " ORDER BY created_at DESC";
         $stmt = $this->conn->prepare($query);
@@ -23,7 +23,7 @@ class Question {
         return $stmt->get_result();
     }
 
-    // ✅ Edit a question
+    // Edit a question
     public function updateQuestion($id, $title, $description) {
         $query = "UPDATE " . $this->table . " SET title = ?, description = ? WHERE id = ?";
         $stmt = $this->conn->prepare($query);
@@ -31,7 +31,7 @@ class Question {
         return $stmt->execute();
     }
 
-    // ✅ Delete a question
+    // Delete a question
     public function deleteQuestion($id) {
         $query = "DELETE FROM " . $this->table . " WHERE id = ?";
         $stmt = $this->conn->prepare($query);
