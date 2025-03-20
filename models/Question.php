@@ -22,11 +22,38 @@ class Question {
 
     // Fetch all questions
     public function getAllQuestions() {
-        $query = "SELECT * FROM " . $this->table . " ORDER BY created_at DESC";
+        $query = "SELECT q.id, q.description, q.created_at, u.username 
+                  FROM " . $this->table . " q
+                  JOIN users u ON q.user_id = u.id
+                  ORDER BY q.created_at DESC";
+    
+        $result = $this->conn->query($query);
+    
+        if ($result->num_rows > 0) {
+            return $result->fetch_all(MYSQLI_ASSOC);
+        } else {
+            return [];
+        }
+    }    
+
+    // Fetch a specific question
+    public function getQuestionById($id) {
+        $query = "SELECT q.id, q.description, q.created_at, u.username 
+                  FROM " . $this->table . " q
+                  JOIN users u ON q.user_id = u.id
+                  WHERE q.id = ?";
+        
         $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("i", $id);
         $stmt->execute();
-        return $stmt->get_result();
-    }
+        $result = $stmt->get_result();
+    
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc();
+        } else {
+            return null;
+        }
+    }        
 
     // Edit a question
     public function updateQuestion($id, $title, $description) {

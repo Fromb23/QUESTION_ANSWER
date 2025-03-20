@@ -16,12 +16,19 @@ class Response {
     }
 
     // Fetch all responses for a specific question
-    public function getResponsesByQuestion($question_id) {
-        $query = "SELECT * FROM " . $this->table . " WHERE question_id = ? ORDER BY created_at ASC";
-        $stmt = $this->conn->prepare($query);
+    public function getResponsesByQuestionId($question_id) {
+        $stmt = $this->conn->prepare("
+            SELECT r.id, r.content, r.created_at, u.username 
+            FROM responses r
+            JOIN users u ON r.user_id = u.id 
+            WHERE r.question_id = ?
+            ORDER BY r.created_at ASC
+        ");
         $stmt->bind_param("i", $question_id);
         $stmt->execute();
-        return $stmt->get_result();
+        $result = $stmt->get_result();
+    
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     // Edit a response
