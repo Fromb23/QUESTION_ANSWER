@@ -100,3 +100,20 @@ function toggleReplyForm(responseId) {
     const form = document.getElementById(`reply-form-${responseId}`);
     form.classList.toggle("hidden");
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".toggle-thread").forEach(button => {
+        button.addEventListener("click", function () {
+            let responseId = this.getAttribute("data-id");
+            let thread = document.getElementById(`thread-${responseId}`);
+
+            if (thread.style.display === "none") {
+                thread.style.display = "block";
+                this.innerHTML = "Hide Replies ▲";
+            } else {
+                thread.style.display = "none";
+                this.innerHTML = `View Replies ▼`;
+            }
+        });
+    });
+});

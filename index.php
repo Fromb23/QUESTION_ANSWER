@@ -92,6 +92,7 @@ if ($selected_question_id) {
                         function displayResponse($response, $level = 0) {
                             $username = $response['username'] ?? 'Anonymous';
                             $marginLeft = $level * 20;
+                            $replyCount = count($response['children']);
                             ?>
                             <div class="border-b py-4 flex justify-between items-center group response-item"
                                 data-id="<?= $response['id'] ?>"
@@ -105,6 +106,11 @@ if ($selected_question_id) {
                                     <p class="text-xs text-gray-400 mt-1">
                                         <?= date('F j, Y, g:i a', strtotime($response['created_at'])) ?>
                                     </p>
+                                    <?php if ($replyCount > 0): ?>
+                                        <button class="toggle-thread text-blue-500 text-sm" data-id="<?= $response['id'] ?>">
+                                            View (<?= $replyCount ?>) Replies ▼
+                                        </button>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="flex space-x-3 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <!-- Like/Unlike -->
@@ -132,16 +138,20 @@ if ($selected_question_id) {
                                     Reply
                                 </button>
                             </div>
-                            <?php
-                            // Recursively display child responses
-                            if (!empty($response['children'])) {
-                                foreach ($response['children'] as $child) {
-                                    displayResponse($child, $level + 1);
-                                }
-                            }
-                        }
 
-                        // Display all responses
+                            <!-- Child Replies (Initially Hidden) -->
+                            <?php if (!empty($response['children'])): ?>
+                                <div class="child-comments" id="thread-<?= $response['id'] ?>"
+                                style="display: none; margin-left: <?= $marginLeft + 20 ?>px; border-left: 2px solid #ccc; padding-left: 10px;">
+                                <?php foreach ($response['children'] as $child) {
+                                    displayResponse($child, $level + 1);
+                                } ?>
+                                </div>
+                            <?php endif; ?>
+                            <?php } ?>
+
+                        <!-- Display all responses -->
+                        <?php
                         if (!empty($responses)) {
                             foreach ($responses as $response) {
                                 displayResponse($response);
