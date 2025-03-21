@@ -8,7 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     $question_id = $_POST['question_id'] ?? null;
-    $parent_response_id = $_POST['parent_response_id'] ?? null; // Get parent ID if it's a reply
+    $parent_response_id = empty($_POST['parent_response_id']) ? NULL : $_POST['parent_response_id'];
     $username = $_SESSION['username'];
     $content = trim($_POST['content'] ?? '');
 
@@ -16,19 +16,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         die("Error: Missing required fields");
     }
 
-    $sql = "INSERT INTO responses (question_id, parent_response_id, username, content, created_at) VALUES (?, ?, ?, ?, NOW())";
+    $sql = "INSERT INTO responses (question_id, parent_response_id, username, content, created_at) 
+            VALUES (?, ?, ?, ?, NOW())";
+
     $stmt = $conn->prepare($sql);
 
     if ($stmt === false) {
         die("Error preparing statement: " . $conn->error);
     }
 
-    // Handle NULL properly
-    if ($parent_response_id === null) {
-        $stmt->bind_param("iss", $question_id, $username, $content);
-    } else {
-        $stmt->bind_param("iiss", $question_id, $parent_response_id, $username, $content);
-    }
+    $stmt->bind_param("iiss", $question_id, $parent_response_id, $username, $content);
 
     if ($stmt->execute()) {
         echo "Response submitted successfully!";

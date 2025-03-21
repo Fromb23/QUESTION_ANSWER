@@ -95,3 +95,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     };
 });
+
+function toggleReplyForm(responseId) {
+    const form = document.getElementById(`reply-form-${responseId}`);
+    form.classList.toggle("hidden");
+}
