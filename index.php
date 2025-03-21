@@ -91,9 +91,12 @@ if ($selected_question_id) {
                         // Recursive function to display responses
                         function displayResponse($response, $level = 0) {
                             $username = $response['username'] ?? 'Anonymous';
-                            $marginLeft = $level * 20; // Indent child responses
+                            $marginLeft = $level * 20;
                             ?>
-                            <div class="border-b py-4 flex justify-between items-center group response-item" data-id="<?= $response['id'] ?>" style="margin-left: <?= $marginLeft ?>px;">
+                            <div class="border-b py-4 flex justify-between items-center group response-item"
+                                data-id="<?= $response['id'] ?>"
+                                style="margin-left: <?= $marginLeft ?>px;"
+                                >
                                 <div class="w-full">
                                     <p class="cursor-pointer">
                                         <span class="font-medium"><?= htmlspecialchars($username) ?>:</span>
@@ -125,7 +128,7 @@ if ($selected_question_id) {
                             <!-- Reply Form (Initially Hidden) -->
                             <div class="hidden ml-6 mt-2 response-reply-form" data-id="<?= $response['id'] ?>">
                                 <input type="text" class="w-full border rounded p-2 text-sm" placeholder="Reply to this response..." />
-                                <button class="mt-1 px-4 py-1 bg-blue-500 text-white text-xs rounded send-reply-btn" data-id="<?= $response['id'] ?>">
+                                <button onclick="setParentResponseId(<?= $response['id'] ?>)" class="mt-1 px-4 py-1 bg-blue-500 text-white text-xs rounded send-reply-btn" data-id="<?= $response['id'] ?>">
                                     Reply
                                 </button>
                             </div>

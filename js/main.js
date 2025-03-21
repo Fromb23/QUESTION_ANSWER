@@ -84,3 +84,14 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const parentResponseInput = document.getElementById("parent_response_id");
+
+    window.setParentResponseId = function (responseId) {
+        if (parentResponseInput) {
+            parentResponseInput.value = responseId;
+            document.getElementById("response-form").scrollIntoView({ behavior: "smooth" });
+        }
+    };
+});

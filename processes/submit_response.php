@@ -3,32 +3,32 @@ session_start();
 require __DIR__ . "/../config/db.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // Check if user is logged in
     if (!isset($_SESSION['username'])) {
         die("Error: User not logged in");
     }
 
-    // Get form data
     $question_id = $_POST['question_id'] ?? null;
-    $username = $_SESSION['username']; // Get username from session
+    $parent_response_id = $_POST['parent_response_id'] ?? null; // Get parent ID if it's a reply
+    $username = $_SESSION['username'];
     $content = trim($_POST['content'] ?? '');
 
-    // Validate input
     if (!$question_id || empty($content)) {
         die("Error: Missing required fields");
     }
 
-    // Prepare SQL query
-    $sql = "INSERT INTO responses (question_id, username, content, created_at) VALUES (?, ?, ?, NOW())";
+    $sql = "INSERT INTO responses (question_id, parent_response_id, username, content, created_at) VALUES (?, ?, ?, ?, NOW())";
     $stmt = $conn->prepare($sql);
 
-    // Check if the query preparation succeeded
     if ($stmt === false) {
         die("Error preparing statement: " . $conn->error);
     }
 
-    // Bind parameters and execute
-    $stmt->bind_param("iss", $question_id, $username, $content);
+    // Handle NULL properly
+    if ($parent_response_id === null) {
+        $stmt->bind_param("iss", $question_id, $username, $content);
+    } else {
+        $stmt->bind_param("iiss", $question_id, $parent_response_id, $username, $content);
+    }
 
     if ($stmt->execute()) {
         echo "Response submitted successfully!";
@@ -36,11 +36,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         echo "Error: " . $stmt->error;
     }
 
-    // Close connections
     $stmt->close();
     $conn->close();
 
-    // Redirect to the homepage
     header("Location: /");
     exit();
 } else {
