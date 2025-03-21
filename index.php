@@ -156,7 +156,6 @@ if ($selected_question_id) {
                 <?php if ($username): ?>
                     <form id="response-form" action="processes/submit_response.php" method="POST" class="mt-4">
                         <input type="hidden" name="question_id" value="<?= $selected_question_id ?>">
-                        <p>Question ID: <?= $selected_question_id ?></p>
                         <input type="hidden" name="parent_response_id" id="parent_response_id" value="">
                         <textarea name="content" placeholder="Post a response..." required class="w-full p-2 border rounded-md"></textarea>
                         <button type="submit" class="mt-2 bg-blue-500 text-white py-2 px-4 rounded">Post Response</button>
