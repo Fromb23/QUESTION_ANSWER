@@ -20,15 +20,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($loggedInUser) {
         session_regenerate_id(true);
 
-        // Store user data in session
         $_SESSION['user_id'] = $loggedInUser['id'];
         $_SESSION['email'] = $loggedInUser['email'];
         $_SESSION['firstname'] = $loggedInUser['firstname'];
         $_SESSION['lastname'] = $loggedInUser['lastname'];
         $_SESSION['username'] = $loggedInUser['username'];
         $_SESSION['profile_icon'] = $loggedInUser['profile_icon'];
-        //var_dump($_SESSION['profile_icon']); 
-        //exit();
 
         header("Location: ../index.php");
         exit();

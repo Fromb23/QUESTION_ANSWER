@@ -92,28 +92,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <form action="settings.php" method="POST" class="mt-4" id="profileForm">
-    <label class="block text-gray-700">Username</label>
-    <input type="text" name="username" value="<?php echo htmlspecialchars($username); ?>" class="w-full p-2 border rounded" id="username">
+            <label class="block text-gray-700">Username</label>
+            <input type="text" name="username" value="<?php echo htmlspecialchars($username); ?>" class="w-full p-2 border rounded" id="username">
 
-    <label class="block text-gray-700 mt-4">Current Password</label>
-    <input type="password" name="current_password" class="w-full p-2 border rounded" id="current_password">
-    <p id="passwordError" class="text-red-500 text-sm hidden">Incorrect current password</p>
+            <label class="block text-gray-700 mt-4">Current Password</label>
+            <input type="password" name="current_password" class="w-full p-2 border rounded" id="current_password">
+            <p id="passwordError" class="text-red-500 text-sm hidden">Incorrect current password</p>
 
-    <!-- Verify Password Button (Hidden by Default) -->
-    <button type="button" id="verifyPasswordButton" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hidden">Verify Password</button>
+            <!-- Verify Password Button (Hidden by Default) -->
+            <button type="button" id="verifyPasswordButton" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hidden">Verify Password</button>
 
-    <div id="passwordFields" class="hidden">
-        <label class="block text-gray-700 mt-2">New Password</label>
-        <input type="password" name="new_password" id="new_password" class="w-full p-2 border rounded">
-        <label class="block text-gray-700 mt-2">Confirm New Password</label>
-        <input type="password" name="confirm_new_password" id="confirm_new_password" class="w-full p-2 border rounded">
-    </div>
+            <div id="passwordFields" class="hidden">
+                <label class="block text-gray-700 mt-2">New Password</label>
+                <input type="password" name="new_password" id="new_password" class="w-full p-2 border rounded">
+                <label class="block text-gray-700 mt-2">Confirm New Password</label>
+                <input type="password" name="confirm_new_password" id="confirm_new_password" class="w-full p-2 border rounded">
+            </div>
 
-    <p id="errorMessage"></p>
+            <p id="errorMessage"></p>
 
-    <button type="submit" id="saveButton" class="mt-4 bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>Save Changes</button>
-</form>
+            <button type="submit" id="saveButton" class="mt-4 bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>Save Changes</button>
+        
+            <div class="flex justify-end">
+                <a href="/" class="text-blue-500 hover:text-blue-700">Back to Home</a>
+            </div>
+        </form>
+    
 
-    <script src="js/settings.js"></script>
-</body>
+        <script src="js/settings.js"></script>
+    </body>
 </html>

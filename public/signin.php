@@ -12,7 +12,7 @@
         
         <!-- Left Section (Image) -->
         <div class="w-1/2 hidden md:block">
-            <img src="signin-image.jpg" alt="Sign In Image" class="h-full w-full object-cover">
+            <img src="../uploads/signin.jpg" alt="Sign In Image" class="h-full w-full object-cover">
         </div>
 
         <!-- Right Section (Form) -->
@@ -35,30 +35,19 @@
 
             <!-- Sign In Form -->
             <form action="../processes/signin_process.php" method="POST" class="mt-4">
-                <!-- Email Input -->
                 <input type="email" name="email" placeholder="Email" required class="w-full p-2 border rounded-md mb-2" aria-label="Email">
-
-                <!-- Password Input -->
                 <input type="password" name="password" placeholder="Password" required class="w-full p-2 border rounded-md mb-4" aria-label="Password">
-
-                <!-- Forgot Password Link -->
-                <a href="#" class="text-blue-500 text-sm block text-right mb-4" aria-label="Forgot Password">Forgot Password?</a>
-
-                <!-- Submit Button -->
+                <a href="forgot_password.php" class="text-blue-500 text-sm block text-right mb-4" aria-label="Forgot Password">Forgot Password?</a>
                 <button type="submit" id="signin-btn" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition">
                     Sign In
                 </button>
-
-                <!-- Loading Message -->
                 <p id="loading-message" class="text-center mt-2 text-gray-500" style="display: none;">Logging in...</p>
             </form>
 
-            <!-- Sign Up Link -->
             <p class="mt-4 text-center text-gray-600">New here? <a href="signup.php" class="text-blue-500">Create an account</a></p>
         </div>
     </div>
 
-    <!-- JavaScript for Loading Message -->
     <script>
         document.querySelector('form').addEventListener('submit', function () {
             document.getElementById('loading-message').style.display = 'block';

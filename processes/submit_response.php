@@ -16,7 +16,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         die("Error: Missing required fields");
     }
 
-    // ✅ Fetch user_id based on the session username
     $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
     if (!$stmt) {
         die("Error preparing statement: " . $conn->error);
@@ -30,14 +29,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
     $stmt->close();
 
-    // ✅ Ensure user_id is set correctly
     if (!$user_id) {
         die("Error: Unable to retrieve user ID");
     }
 
-    /**
-     * Recursively fetch the hierarchy of usernames leading to the top parent.
-     */
     function getMentions($conn, $parent_response_id) {
         $mentions = [];
         $current_parent_id = $parent_response_id;
@@ -54,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             if ($stmt->fetch()) {
                 if (!in_array($parent_username, $mentions)) {
-                    $mentions[] = $parent_username; // Keep order from top parent to immediate parent
+                    $mentions[] = $parent_username;
                 }
                 $current_parent_id = $next_parent_id;
             } else {
@@ -64,15 +59,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $stmt->close();
         }
 
-        return array_reverse($mentions); // Maintain top-to-bottom hierarchy
+        return array_reverse($mentions);
     }
 
-    // Fetch mentions correctly
     $mentions = getMentions($conn, $parent_response_id);
     $mention_string = empty($mentions) ? "" : "@" . implode(" @", $mentions) . " ";
     $formatted_content = $mention_string . $content;
 
-    // ✅ Modify INSERT statement to include `user_id`
     $sql = "INSERT INTO responses (question_id, parent_response_id, user_id, content, created_at) 
             VALUES (?, ?, ?, ?, NOW())";
 
