@@ -1,119 +1,138 @@
-// Toggle user dropdown
+document.addEventListener("DOMContentLoaded", function () {
+    initLucideIcons();
+    handleReplyForm();
+    handleReplySubmission();
+    handleActions();
+    handleParentResponse();
+    handleReplyToggle();
+});
+
+// Initialize Lucide icons
+function initLucideIcons() {
+    lucide.createIcons();
+}
+
+// Toggle dropdown menu
 function toggleDropdown() {
     document.getElementById("dropdown").classList.toggle("hidden");
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    // Initialize Lucide icons
-    lucide.createIcons();
-
-    // Handle double-click to show reply form
+// Show/Hide reply form on double click (only one open at a time)
+function handleReplyForm() {
     document.querySelectorAll(".response-item").forEach((item) => {
-        item.addEventListener("dblclick", (e) => {
+        item.addEventListener("dblclick", () => {
             const responseId = item.getAttribute("data-id");
-            const replyForm = document.querySelector(
-                `.response-reply-form[data-id="${responseId}"]`
-            );
-            replyForm.classList.toggle("hidden");
+            const replyForm = document.querySelector(`.response-reply-form[data-id="${responseId}"]`);
+
+            document.querySelectorAll(".response-reply-form").forEach((form) => {
+                if (form !== replyForm) {
+                    form.classList.add("hidden");
+                }
+            });
+
+            if (replyForm) replyForm.classList.toggle("hidden");
         });
     });
+}
 
-    // Handle reply submission
+// Submit a reply
+function handleReplySubmission() {
     document.querySelectorAll(".send-reply-btn").forEach((button) => {
-        button.addEventListener("click", (e) => {
+        button.addEventListener("click", () => {
             const responseId = button.getAttribute("data-id");
-            const replyInput = document.querySelector(
-                `.response-reply-form[data-id="${responseId}"] input`
-            );
+            const replyInput = document.querySelector(`.response-reply-form[data-id="${responseId}"] input`);
             const replyContent = replyInput.value.trim();
 
             if (replyContent) {
-                // Send the reply to the server
                 fetch("processes/submit_response.php", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                    },
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: new URLSearchParams({
                         question_id: document.querySelector("input[name='question_id']").value,
                         content: replyContent,
                         parent_response_id: responseId,
                     }),
                 })
-                    .then((response) => response.text())
-                    .then((data) => {
-                        location.reload(); // Reload the page to show the new reply
-                    })
-                    .catch((error) => {
-                        console.error("Error:", error);
-                    });
+                    .then(response => response.text())
+                    .then(() => location.reload())
+                    .catch(error => console.error("Error:", error));
             }
         });
     });
+}
 
-    // Handle like/unlike, edit, delete, and share buttons
+// Handle Like, Edit, Delete, Share actions
+function handleActions() {
     document.querySelectorAll(".like-btn, .edit-btn, .delete-btn, .share-btn").forEach((button) => {
-        button.addEventListener("click", (e) => {
+        button.addEventListener("click", () => {
             const action = button.classList.contains("like-btn") ? "like" :
                           button.classList.contains("edit-btn") ? "edit" :
                           button.classList.contains("delete-btn") ? "delete" : "share";
             const responseId = button.getAttribute("data-id");
 
-            if (action === "delete") {
-                if (!confirm("Are you sure you want to delete this response?")) return;
-            }
+            if (action === "delete" && !confirm("Are you sure you want to delete this response?")) return;
 
             fetch(`processes/${action}_response.php`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: new URLSearchParams({ response_id: responseId }),
             })
-                .then((response) => response.text())
-                .then((data) => {
-                    if (action === "delete") {
-                        location.reload(); // Reload the page after deletion
-                    } else {
-                        alert(`${action} action successful!`);
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error:", error);
-                });
+                .then(response => response.text())
+                .then(() => action === "delete" ? location.reload() : alert(`${action} action successful!`))
+                .catch(error => console.error("Error:", error));
         });
     });
-});
+}
 
-document.addEventListener("DOMContentLoaded", function () {
+// Set parent response ID when replying
+function handleParentResponse() {
     const parentResponseInput = document.getElementById("parent_response_id");
-
     window.setParentResponseId = function (responseId) {
         if (parentResponseInput) {
             parentResponseInput.value = responseId;
             document.getElementById("response-form").scrollIntoView({ behavior: "smooth" });
         }
     };
-});
-
-function toggleReplyForm(responseId) {
-    const form = document.getElementById(`reply-form-${responseId}`);
-    form.classList.toggle("hidden");
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".toggle-thread").forEach(button => {
-        button.addEventListener("click", function () {
-            let responseId = this.getAttribute("data-id");
-            let thread = document.getElementById(`thread-${responseId}`);
+function handleReplyToggle() {
+    const openThreads = new Set(JSON.parse(localStorage.getItem("openThreads")) || []);
 
+    document.querySelectorAll(".toggle-thread").forEach(button => {
+        const responseId = button.getAttribute("data-id");
+        let thread = document.getElementById(`thread-${responseId}`);
+
+        // Restore thread state on page load
+        if (openThreads.has(responseId) && thread) {
+            thread.style.display = "block";
+            button.innerHTML = "Hide Replies ▲";
+        }
+
+        button.addEventListener("click", function () {
             if (thread.style.display === "none") {
                 thread.style.display = "block";
-                this.innerHTML = "Hide Replies ▲";
+                button.innerHTML = "Hide Replies ▲";
+                openThreads.add(responseId);
             } else {
                 thread.style.display = "none";
-                this.innerHTML = `View Replies ▼`;
+                button.innerHTML = "View Replies ▼";
+                openThreads.delete(responseId);
             }
+            
+            localStorage.setItem("openThreads", JSON.stringify([...openThreads]));
         });
     });
+}
+
+// Handle logout
+document.addEventListener("DOMContentLoaded", function () {
+    const logoutLink = document.querySelector("a[href='public/logout.php']");
+
+    if (logoutLink) {
+        logoutLink.addEventListener("click", function (event) {
+            event.preventDefault();
+            localStorage.clear();
+            window.location.href = "public/logout.php";
+        });
+    }
 });

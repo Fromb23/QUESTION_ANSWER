@@ -82,10 +82,8 @@ if ($selected_question_id) {
         <main id="main-content" class="flex-1 bg-white p-4 rounded shadow">
             <?php if ($selected_question): ?>
                 <h2 class="text-xl font-semibold"><?= htmlspecialchars($selected_question['description']) ?></h2>
-                <p class="text-gray-700 mt-2"><?= htmlspecialchars($selected_question['details'] ?? 'No details provided.') ?></p>
 
                 <div id="response-section" class="mt-4">
-                    <h3 class="text-lg font-semibold mb-4">Responses</h3>
                     <div id="response-list" class="mt-2 border-t pt-2 text-gray-700">
                         <?php
                         // Recursive function to display responses
@@ -94,7 +92,7 @@ if ($selected_question_id) {
                             $marginLeft = $level * 20;
                             $replyCount = count($response['children']);
                             ?>
-                            <div class="border-b py-4 flex justify-between items-center group response-item"
+                            <div class="border-t py-4 flex justify-between items-center group response-item border-l pl-4"
                                 data-id="<?= $response['id'] ?>"
                                 style="margin-left: <?= $marginLeft ?>px;"
                                 >
