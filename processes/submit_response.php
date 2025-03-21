@@ -16,6 +16,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         die("Error: Missing required fields");
     }
 
+    // ✅ Fetch user_id based on the session username
+    $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
+    if (!$stmt) {
+        die("Error preparing statement: " . $conn->error);
+    }
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $stmt->bind_result($user_id);
+    
+    if (!$stmt->fetch()) {
+        die("Error: User not found");
+    }
+    $stmt->close();
+
+    // ✅ Ensure user_id is set correctly
+    if (!$user_id) {
+        die("Error: Unable to retrieve user ID");
+    }
+
     /**
      * Recursively fetch the hierarchy of usernames leading to the top parent.
      */
@@ -53,17 +72,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $mention_string = empty($mentions) ? "" : "@" . implode(" @", $mentions) . " ";
     $formatted_content = $mention_string . $content;
 
-    // Insert response with formatted content
-    $sql = "INSERT INTO responses (question_id, parent_response_id, username, content, created_at) 
+    // ✅ Modify INSERT statement to include `user_id`
+    $sql = "INSERT INTO responses (question_id, parent_response_id, user_id, content, created_at) 
             VALUES (?, ?, ?, ?, NOW())";
 
     $stmt = $conn->prepare($sql);
-
     if ($stmt === false) {
         die("Error preparing statement: " . $conn->error);
     }
 
-    $stmt->bind_param("iiss", $question_id, $parent_response_id, $username, $formatted_content);
+    $stmt->bind_param("iiis", $question_id, $parent_response_id, $user_id, $formatted_content);
 
     if ($stmt->execute()) {
         echo "Response submitted successfully!";

@@ -26,6 +26,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['firstname'] = $loggedInUser['firstname'];
         $_SESSION['lastname'] = $loggedInUser['lastname'];
         $_SESSION['username'] = $loggedInUser['username'];
+        $_SESSION['profile_icon'] = $loggedInUser['profile_icon'];
+        //var_dump($_SESSION['profile_icon']); 
+        //exit();
 
         header("Location: ../index.php");
         exit();

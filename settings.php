@@ -94,10 +94,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form action="settings.php" method="POST" class="mt-4">
             <label class="block text-gray-700">Username</label>
             <input type="text" name="username" value="<?php echo htmlspecialchars($username); ?>" class="w-full p-2 border rounded" id="username">
-        </form>
 
-        <form action="settings.php" method="POST" class="mt-4">
-            <label class="block text-gray-700">Current Password</label>
+            <label class="block text-gray-700 mt-4">Current Password</label>
             <input type="password" name="current_password" class="w-full p-2 border rounded" id="current_password">
 
             <div id="passwordFields" class="hidden">
@@ -106,9 +104,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label class="block text-gray-700 mt-2">Confirm New Password</label>
                 <input type="password" name="confirm_new_password" class="w-full p-2 border rounded">
             </div>
-        </form>
 
-        <button id="saveButton" class="mt-4 bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>Save Changes</button>
+            <button type="submit" id="saveButton" class="mt-4 bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>Save Changes</button>
+        </form>
     </div>
 
     <script>

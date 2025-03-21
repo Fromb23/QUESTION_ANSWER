@@ -24,35 +24,44 @@ public function createResponse($question_id, $user_id, $content, $parent_respons
 
 
 
-    // Fetch responses by question ID
-    public function getResponsesByQuestionId($questionId) {
-        $sql = "SELECT * FROM responses WHERE question_id = ? ORDER BY created_at ASC";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("i", $questionId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $responses = $result->fetch_all(MYSQLI_ASSOC);
+public function getResponsesByQuestionId($questionId) {
+    $sql = "SELECT r.*, u.username 
+            FROM responses r
+            JOIN users u ON r.user_id = u.id
+            WHERE r.question_id = ?
+            ORDER BY r.created_at ASC";
     
-        $responseMap = [];
-        $nestedResponses = [];
-    
-        // First, store all responses in a flat array
-        foreach ($responses as $response) {
-            $response['children'] = [];
-            $responseMap[$response['id']] = $response;
+    $stmt = $this->conn->prepare($sql);
+
+    if (!$stmt) {
+        die("SQL Error: " . $this->conn->error); // Print the SQL error
+    }
+    $stmt->bind_param("i", $questionId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $responses = $result->fetch_all(MYSQLI_ASSOC);
+
+    $responseMap = [];
+    $nestedResponses = [];
+
+    // First, store all responses in a flat array
+    foreach ($responses as $response) {
+        $response['children'] = [];
+        $responseMap[$response['id']] = $response;
+    }
+
+    // Then, build the nested structure
+    foreach ($responseMap as $id => &$response) {
+        if ($response['parent_response_id'] !== null && isset($responseMap[$response['parent_response_id']])) {
+            $responseMap[$response['parent_response_id']]['children'][] = &$response;
+        } else {
+            $nestedResponses[] = &$response;
         }
-    
-        // Then, build the nested structure
-        foreach ($responseMap as $id => &$response) {
-            if ($response['parent_response_id'] !== null && isset($responseMap[$response['parent_response_id']])) {
-                $responseMap[$response['parent_response_id']]['children'][] = &$response;
-            } else {
-                $nestedResponses[] = &$response;
-            }
-        }
-    
-        return $nestedResponses;
-    }    
+    }
+
+    return $nestedResponses;
+}
+
 
     // Edit a response
     public function updateResponse($id, $content) {

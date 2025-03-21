@@ -14,8 +14,19 @@ function initLucideIcons() {
 
 // Toggle dropdown menu
 function toggleDropdown() {
-    document.getElementById("dropdown").classList.toggle("hidden");
+    const dropdown = document.getElementById("dropdown");
+    dropdown.classList.toggle("hidden");
 }
+
+// Close dropdown when clicking outside
+document.addEventListener("click", function (event) {
+    const dropdown = document.getElementById("dropdown");
+    const button = document.getElementById("dropdown-button");
+
+    if (!dropdown.contains(event.target) && !button.contains(event.target)) {
+        dropdown.classList.add("hidden");
+    }
+});
 
 // Show/Hide reply form on double click (only one open at a time)
 function handleReplyForm() {

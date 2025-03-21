@@ -8,7 +8,7 @@ $questionModel = new Question($conn);
 $questions = $questionModel->getAllQuestions();
 $responseModel = new Response($conn);
 
-$profile_image = $_SESSION['profile_image'] ?? null;
+$profile_icon = $_SESSION['profile_icon'] ?? null;
 $username = $_SESSION['username'] ?? null;
 $first_letter = $username ? strtoupper(substr($username, 0, 1)) : null;
 
@@ -40,9 +40,9 @@ if ($selected_question_id) {
         <h1 class="text-xl font-bold">QUESTION AND ANSWER</h1>
         <?php if ($username): ?>
             <div class="relative">
-                <button onclick="toggleDropdown()" class="flex items-center bg-blue-500 text-white px-4 py-2 rounded-full">
-                    <?php if ($profile_image): ?>
-                        <img src="<?php echo htmlspecialchars($profile_image); ?>" alt="Profile" class="w-8 h-8 rounded-full mr-2">
+                <button id="dropdown-button" onclick="toggleDropdown()" class="flex items-center bg-blue-500 text-white px-4 py-2 rounded-full">
+                    <?php if ($profile_icon): ?>
+                        <img src="<?php echo htmlspecialchars($profile_icon); ?>" alt="Profile" class="w-8 h-8 rounded-full mr-2">
                     <?php else: ?>
                         <span class="w-8 h-8 flex items-center justify-center bg-gray-300 text-gray-700 font-bold rounded-full mr-2">
                             <?php echo $first_letter; ?>
