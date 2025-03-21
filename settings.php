@@ -91,44 +91,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
         </div>
 
-        <form action="settings.php" method="POST" class="mt-4">
-            <label class="block text-gray-700">Username</label>
-            <input type="text" name="username" value="<?php echo htmlspecialchars($username); ?>" class="w-full p-2 border rounded" id="username">
+        <form action="settings.php" method="POST" class="mt-4" id="profileForm">
+    <label class="block text-gray-700">Username</label>
+    <input type="text" name="username" value="<?php echo htmlspecialchars($username); ?>" class="w-full p-2 border rounded" id="username">
 
-            <label class="block text-gray-700 mt-4">Current Password</label>
-            <input type="password" name="current_password" class="w-full p-2 border rounded" id="current_password">
+    <label class="block text-gray-700 mt-4">Current Password</label>
+    <input type="password" name="current_password" class="w-full p-2 border rounded" id="current_password">
+    <p id="passwordError" class="text-red-500 text-sm hidden">Incorrect current password</p>
 
-            <div id="passwordFields" class="hidden">
-                <label class="block text-gray-700 mt-2">New Password</label>
-                <input type="password" name="new_password" class="w-full p-2 border rounded">
-                <label class="block text-gray-700 mt-2">Confirm New Password</label>
-                <input type="password" name="confirm_new_password" class="w-full p-2 border rounded">
-            </div>
+    <!-- Verify Password Button (Hidden by Default) -->
+    <button type="button" id="verifyPasswordButton" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hidden">Verify Password</button>
 
-            <button type="submit" id="saveButton" class="mt-4 bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>Save Changes</button>
-        </form>
+    <div id="passwordFields" class="hidden">
+        <label class="block text-gray-700 mt-2">New Password</label>
+        <input type="password" name="new_password" id="new_password" class="w-full p-2 border rounded">
+        <label class="block text-gray-700 mt-2">Confirm New Password</label>
+        <input type="password" name="confirm_new_password" id="confirm_new_password" class="w-full p-2 border rounded">
     </div>
 
-    <script>
-        let currentPassword = document.getElementById("current_password");
-        let passwordFields = document.getElementById("passwordFields");
-        let saveButton = document.getElementById("saveButton");
+    <p id="errorMessage"></p>
 
-        currentPassword.addEventListener("input", () => {
-            if (currentPassword.value.length > 0) {
-                passwordFields.classList.remove("hidden");
-            } else {
-                passwordFields.classList.add("hidden");
-            }
-        });
+    <button type="submit" id="saveButton" class="mt-4 bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>Save Changes</button>
+</form>
 
-        document.querySelectorAll("input").forEach(input => {
-            input.addEventListener("input", () => {
-                saveButton.classList.remove("bg-gray-400", "cursor-not-allowed");
-                saveButton.classList.add("bg-blue-500", "cursor-pointer");
-                saveButton.disabled = false;
-            });
-        });
-    </script>
+    <script src="js/settings.js"></script>
 </body>
 </html>
